@@ -12,10 +12,16 @@ function removeFromArray(arr, elm) {
 
 //raw distance
 function heuristic (a,b){   
-    return Math.hypot(a.x - b.x, a.y - a.y);
+    let xChange = Math.abs(a.x - b.x);
+    let yChange = Math.abs(a.y - b.y);
+
+    return xChange + yChange;
 }
 
 const renderGrid = document.getElementById('algo-grid');
+const visualiseBtn = document.getElementById('visualisation-btn');
+const clearBtn = document.getElementById('clear-btn');
+
 let tableState = "";
 
 
@@ -28,6 +34,13 @@ let openSet = [];
 let closedSet = [];
 let shortestPath = [];
 let start, end, w, h, timer;
+
+// start and end col values
+let startx = 3;
+let starty = 5;
+let endx = cols-1;
+let endy = rows-1;
+
 
 function Node (i,j){
     this.x = i;
@@ -91,8 +104,8 @@ function setup() {
         }
     }
 
-    start = grid[2][5];
-    end = grid[18][12];
+    start = grid[startx][starty];
+    end = grid[endx][endy];
 
     openSet.push(start);
 
@@ -106,15 +119,19 @@ function initialRender (){
         }
     }
 
-    renderGrid.innerHTML = tableState
+    renderGrid.innerHTML = tableState + "<div id='cursor'></div>"
 
-    document.getElementById('node-2-5').classList.add("start");
-    document.getElementById('node-18-12').classList.add("end");
+    document.getElementById(`node-${startx}-${starty}`).classList.add("start");
+    document.getElementById(`node-${endx}-${endy}`).classList.add("end");
     
 }
 
-function mainLoop(){
-    if(openSet.length > 0) {
+function a_star(){
+       
+
+    while(openSet.length > 0) {
+
+        // Grab the lowest f(x) to process next
         var lowestIndex = 0;
         for (let i = 0; i<openSet.length; i++) {
             if(openSet[i].f < openSet[lowestIndex].f) {
@@ -122,72 +139,181 @@ function mainLoop(){
             }
         }
 
-        var current = openSet[lowestIndex];
+        var currentNode = openSet[lowestIndex];
+
         if (openSet[lowestIndex] === end) {
 
             // find the shortest path
-            var tempNode = current;
+            var tempNode = currentNode;
+            
             shortestPath.push(tempNode)
 
             while(tempNode.previous) {
                 shortestPath.push(tempNode.previous);
                 tempNode = tempNode.previous;
             }
-
+            openSet = [];
             clearTimeout(timer); 
             console.log("Done!");
         }
 
-        removeFromArray(openSet, current);
+        removeFromArray(openSet, currentNode);
         // openSet.remove(current);
-        closedSet.push(current);
+        closedSet.push(currentNode);
  
-        let neighbors = current.neighbors;
+        let neighbors = currentNode.neighbors;
 
         for (let i = 0; i< neighbors.length; i++) {
 
-            currentNeighbor = neighbors[i];
+            neighbor = neighbors[i];
 
-            if(!closedSet.includes(currentNeighbor)) {
-                var tempGvalue =  current.g + 1;
-                
-                if(openSet.includes(currentNeighbor)) {
-                    if (tempGvalue < currentNeighbor.g) {
-                        currentNeighbor.g = tempGvalue;
-                    }
-                }
-                else {
-                    currentNeighbor.g = tempGvalue;
-                    openSet.push(currentNeighbor);
-                }
-
-                currentNeighbor.h = heuristic(currentNeighbor, end);
-                currentNeighbor.f = currentNeighbor.g + currentNeighbor.h;
-
-                currentNeighbor.previous = current;
+            if(closedSet.includes(neighbor)) {
+                // not a valid node to process, skip to next neighbor
+                continue;
             }
 
+            // g score is the shortest distance from start to current node, we need to check if
+            //   the path we have arrived at this neighbor is the shortest one we have seen yet
+            var gScore = currentNode.g + 1; // 1 is the distance from a node to it's neighbor
+            var gScoreIsBest = false;
+
+            if(!openSet.includes(neighbor)) {
+                // This the the first time we have arrived at this node, it must be the best
+                // Also, we need to take the h (heuristic) score since we haven't done so yet
+       
+                gScoreIsBest = true;
+                neighbor.h = heuristic(neighbor, end);
+                openSet.push(neighbor);
+            }
+            else if(gScore < neighbor.g) {
+                // We have already seen the node, but last time it had a worse g (distance from start)
+                gScoreIsBest = true;
+            }
+       
+            if(gScoreIsBest) {
+            // Found an optimal (so far) path to this node.   Store info on how we got here and
+            //  just how good it really is...
+            neighbor.previous = currentNode;
+            neighbor.g = gScore;
+            neighbor.f = neighbor.g + neighbor.h;
+            }
         }
 
-    }
-
-    for(i=0; i<closedSet.length; i++){
-        document.getElementById('node-' + closedSet[i].x + "-" + closedSet[i].y).classList.add("viewed");
-    }
-
-    // console.log(shortestPath);
-    if(shortestPath.length > 0) {
-        for(i=0; i<shortestPath.length; i++){
-            document.getElementById('node-' + shortestPath[i].x + "-" + shortestPath[i].y).classList.remove("viewed");
-            document.getElementById('node-' + shortestPath[i].x + "-" + shortestPath[i].y).classList.add("path");
-        }
     }
 }
 
+
+function visualiseAlgorithm() {
+    closedSet.forEach(function(node, index){
+        setTimeout(function(){
+            document.getElementById('node-' + node.x + "-" + node.y).classList.add("viewed");
+        }, 66 * index);
+    });
+
+
+    setTimeout(function(){
+    shortestPath.forEach(function(node, index){
+        setTimeout(function(){
+            document.getElementById('node-' + node.x + "-" + node.y).classList.remove("viewed");
+            document.getElementById('node-' + node.x + "-" + node.y).classList.add("path");
+        }, 66 * index);
+    });
+    }, 66*closedSet.length);
+
+
+}
+
 window.onload = function() {
+    let clickDown = false;
+    let currentIcon = "";
     setup();
     initialRender();
-    timer = setInterval(function() { 
-        mainLoop();
-      }, 66);
+
+    let start_btn = document.querySelector(`.start`);
+    let end_btn = document.querySelector(`.end`);
+
+
+    const cursor = document.getElementById('cursor');
+
+    renderGrid.addEventListener("mousedown", function(e){
+        if(e.target.classList.contains('start')) {
+            e.target.classList.remove('start');
+            currentIcon = "start";
+        }
+
+        if(e.target.classList.contains('end')) {
+            e.target.classList.remove('end');
+            currentIcon = "end";
+        }
+
+        clickDown = true;
+    }); 
+    
+    
+    renderGrid.addEventListener("mouseup", function(e){
+        clickDown = false;
+        currentIcon = "";
+        cursor.classList.remove("cursor--start", "cursor--end", "cursor--display");
+
+    }); 
+
+
+    const onMouseMove = (e) =>{
+        if(clickDown) 
+        {
+            if (currentIcon === "start") {
+                cursor.classList.add("cursor--start");
+            }
+            if (currentIcon === "end") {
+                cursor.classList.add("cursor--end");
+            }
+            cursor.classList.add("cursor--display");
+            cursor.style.left = e.pageX + 'px';
+            cursor.style.top = e.pageY + 'px';
+        }
+    }
+    
+    document.addEventListener('mousemove', onMouseMove);
+    
+
 };
+
+
+
+
+visualiseBtn.onclick = function(){
+    console.log("test");
+};
+
+
+
+
+visualiseBtn.onclick = function(){
+    var t0 = performance.now()
+    a_star();
+
+    var t1 = performance.now()
+    console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.")
+    visualiseAlgorithm();
+    // if(!timer){
+    //     timer = setInterval(function() { 
+    //         a_star();
+    //     }, 66);
+    // }
+};
+
+
+clearBtn.onclick = function(){
+    // let gridNodes = document.querySelectorAll("#algo-grid .grid-node");
+
+    // gridNodes.forEach(function(node){
+    //     node.classList.remove("viewed");
+
+    // })
+
+    location.reload();
+};
+
+
+
+
