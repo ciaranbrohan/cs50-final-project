@@ -257,8 +257,6 @@ window.onload = function() {
 
     }); 
 
-    
-
     const onMouseMove = (e) =>{
         if(clickDown) 
         {
