@@ -9,6 +9,24 @@ function removeFromArray(arr, elm) {
     }
 }
 
+function getHoverElement(x, y) {
+    let element,xCalc,yCalc;
+    let nodeElems =  document.querySelector("#algo-grid");
+    let offsetWidth = nodeElems.scrollWidth + nodeElems.offsetLeft
+    let offsetHeight = nodeElems.scrollHeight + nodeElems.offsetTop
+
+
+    if(nodeElems.offsetLeft < x && offsetWidth > x && nodeElems.offsetTop < y && offsetHeight > y) {
+        xCalc = Math.floor((x-nodeElems.offsetLeft)/20);
+        yCalc = Math.floor((y-nodeElems.offsetTop)/20);
+
+        element = document.getElementById(`node-${yCalc}-${xCalc}`);
+
+    }
+
+    return [element, xCalc, yCalc];
+}
+
 
 //raw distance
 function heuristic (a,b){   
@@ -23,6 +41,7 @@ const visualiseBtn = document.getElementById('visualisation-btn');
 const clearBtn = document.getElementById('clear-btn');
 
 let tableState = "";
+let gridNodes = document.querySelectorAll("#algo-grid .grid-node");
 
 
 let cols = 20;
@@ -245,16 +264,23 @@ window.onload = function() {
             e.target.classList.remove('end');
             currentIcon = "end";
         }
-
         clickDown = true;
     }); 
     
     
     renderGrid.addEventListener("mouseup", function(e){
+        const getElement = getHoverElement(e.x, e.y);
         clickDown = false;
+        console.log(currentIcon)
+        getElement[0].classList.add(currentIcon);
+        
+        start = grid[getElement[2]][getElement[1]];
+        openSet = [];
+        openSet.push(start);
+
+
         currentIcon = "";
         cursor.classList.remove("cursor--start", "cursor--end", "cursor--display");
-
     }); 
 
     const onMouseMove = (e) =>{
@@ -312,7 +338,3 @@ clearBtn.onclick = function(){
 
     location.reload();
 };
-
-
-
-
