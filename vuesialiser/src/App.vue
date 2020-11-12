@@ -15,13 +15,14 @@
 
 <script>
 import Node from './components/Node.vue'
+import grid from './lib/grid/grid'
 import astar from './lib/algorithms/astar'
+
 
 export default {
   name: 'App',
   components: {
     Node
-  
   },
   data(){
     return {
@@ -72,17 +73,27 @@ export default {
         }
     },
     runAlgo(){
-      let algo = astar.calculate(this.cols, this.rows, this.startNodeX, this.startNodeY, this.endNodeX, this.endNodeY)
+      let gridRender = grid.init(this.cols, this.rows);
+      console.log(gridRender.render)
+      
+      let algo = astar.calculate(gridRender.render, this.startNodeX, this.startNodeY, this.endNodeX, this.endNodeY)
       this.visualiseAlgo(algo.shortestPath, algo.visitedSet)
     },
     visualiseAlgo(shortestPath, visitedNodes){
-      console.log(shortestPath)
-      console.log(visitedNodes)
-
       visitedNodes.forEach(function(node, index){
         setTimeout(function(){
             document.getElementById(`node-${node.x+1}-${node.y+1}`).classList.add("viewed");
         }, 66 * index);
+
+
+        setTimeout(function(){
+          shortestPath.forEach(function(node, index){
+              setTimeout(function(){
+                  document.getElementById(`node-${node.x+1}-${node.y+1}`).classList.remove("viewed");
+                  document.getElementById(`node-${node.x+1}-${node.y+1}`).classList.add("path");
+              }, 66 * index);
+          });
+        }, 66*visitedNodes.length);
     });
     }
   },

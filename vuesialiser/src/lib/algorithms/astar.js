@@ -1,5 +1,5 @@
 let astar = {
-calculate(cols, rows, startx, starty, endx, endy){ 
+calculate(grid, startx, starty, endx, endy){ 
 
     function heuristic (a,b){   
         let xChange = Math.abs(a.x - b.x);
@@ -16,7 +16,6 @@ calculate(cols, rows, startx, starty, endx, endy){
         }
     }
 
-    let grid = new Array(cols); //moved
 
     let openSet = [];
     let closedSet = [];
@@ -25,55 +24,6 @@ calculate(cols, rows, startx, starty, endx, endy){
     let start, end;
     let finishedAlgorithm = false;
 
-    function Node (i,j){
-        this.x = i;
-        this.y = j;
-        this.f = 0;
-        this.g = 0;
-        this.h = 0;
-        this.previous = undefined;
-        this.neighbors = [];
-
-        this.addNeighbors = function(grid){
-            let x = this.x;
-            let y = this.y;
-
-            if (x < cols - 1 ) {
-                this.neighbors.push(grid[x + 1][y]);
-            }
-            if (x > 0) {
-                this.neighbors.push(grid[x - 1][y]);
-            }
-            if(y < rows - 1)
-            {
-                this.neighbors.push(grid[x][y + 1]);
-            }
-            if (y > 0) {
-                this.neighbors.push(grid[x][y - 1]);
-            }
-        }
-    }
-
-    for(let i = 0; i<cols; i++)
-    {
-        grid[i] = new Array(rows);
-    }
-
-
-    //loops set array and creates nodes for each
-    for(let i = 0; i<cols; i++) {
-        for(let j = 0; j<rows; j++)
-        {
-            grid[i][j] = new Node(i,j);
-        }
-    }
-
-    for(let i = 0; i<cols; i++) {
-        for(let j = 0; j<rows; j++)
-        {
-            grid[i][j].addNeighbors(grid);
-        }
-    }
 
     start = grid[startx-1][starty-1];
     end = grid[endx-1][endy-1];
@@ -117,7 +67,6 @@ calculate(cols, rows, startx, starty, endx, endy){
         for (let i = 0; i< neighbors.length; i++) {
 
             let neighbor = neighbors[i];
-
             if(closedSet.includes(neighbor)) {
                 // not a valid node to process, skip to next neighbor
                 continue;
@@ -131,7 +80,7 @@ calculate(cols, rows, startx, starty, endx, endy){
             if(!openSet.includes(neighbor)) {
                 // This the the first time we have arrived at this node, it must be the best
                 // Also, we need to take the h (heuristic) score since we haven't done so yet
-       
+                console.log(neighbor)
                 gScoreIsBest = true;
                 neighbor.h = heuristic(neighbor, end);
                 openSet.push(neighbor);
