@@ -9,7 +9,8 @@
         </div>
       </div>
     </div>
-    <button v-on:click="runAlgo">test</button>
+    <button v-on:click="runAlgo">Visualise!</button>
+     <button v-on:click="resetGrid">Reset</button>
   </div>
 </template>
 
@@ -35,12 +36,14 @@ export default {
       endNodeX: 20,
       endNodeY: 20,
       mousedownID: -1,
-      changingNode: ""
+      changingNode: "",
+      hasVisualisation: false
+    
     }
   },
   methods: {
     mouseDown(event){
-      
+      if(!this.hasVisualisation) {
        if(this.mousedownID==-1) {
           if(event.target.classList.contains("start")){
             this.changingNode = "start"
@@ -50,12 +53,14 @@ export default {
           }
           this.mousedownID = setInterval(this.whilemousedown(), 100 /*execute every 100ms*/);
        }
+      }
     },
     whilemousedown() {
       console.log()
       //todo add functionality around the drag
     },
     mouseup(event) {
+    if(!this.hasVisualisation) {
       if(this.mousedownID!=-1) {  //Only stop if exists
         clearInterval(this.mousedownID);
         this.mousedownID=-1;
@@ -71,14 +76,14 @@ export default {
         this.changingNode = ""
   
         }
+    }
     },
     runAlgo(){
-      let gridRender = grid.init(this.cols, this.rows);
-      console.log(gridRender.render)
-      
+      let gridRender = grid.init(this.cols, this.rows);      
       let algo = astar.calculate(gridRender.render, this.startNodeX, this.startNodeY, this.endNodeX, this.endNodeY)
       this.visualiseAlgo(algo.shortestPath, algo.visitedSet)
-    },
+      this.hasVisualisation = true;
+   },
     visualiseAlgo(shortestPath, visitedNodes){
       visitedNodes.forEach(function(node, index){
         setTimeout(function(){
@@ -95,6 +100,18 @@ export default {
           });
         }, 66*visitedNodes.length);
     });
+    },
+    resetGrid(){
+      this.startNodeX = 1;
+      this.startNodeY = 1;
+      this.endNodeX = 20;
+      this.endNodeY = 20;
+
+      let gridNode = document.querySelectorAll('.grid-node');
+      
+      gridNode.forEach(function(node){
+        node.classList.remove('viewed', 'path')
+      })
     }
   },
   mounted: function() {

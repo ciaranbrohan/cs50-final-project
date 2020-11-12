@@ -234,7 +234,6 @@ window.onload = function() {
     renderGrid.addEventListener("mouseup", function(e){
         const getElement = getHoverElement(e.x, e.y);
         clickDown = false;
-        console.log(currentIcon)
         getElement[0].classList.add(currentIcon);
         
         start = grid[getElement[2]][getElement[1]];

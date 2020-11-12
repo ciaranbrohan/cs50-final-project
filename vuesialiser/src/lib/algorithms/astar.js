@@ -80,7 +80,6 @@ calculate(grid, startx, starty, endx, endy){
             if(!openSet.includes(neighbor)) {
                 // This the the first time we have arrived at this node, it must be the best
                 // Also, we need to take the h (heuristic) score since we haven't done so yet
-                console.log(neighbor)
                 gScoreIsBest = true;
                 neighbor.h = heuristic(neighbor, end);
                 openSet.push(neighbor);
