@@ -37,8 +37,9 @@ export default {
       endNodeY: 20,
       mousedownID: -1,
       changingNode: "",
-      hasVisualisation: false
-    
+      hasVisualisation: false,
+      runningVisualisation: false
+
     }
   },
   methods: {
@@ -85,6 +86,9 @@ export default {
       this.hasVisualisation = true;
    },
     visualiseAlgo(shortestPath, visitedNodes){
+
+      let visulatisationLength = 66 * visitedNodes.length;
+      console.log(visulatisationLength)
       visitedNodes.forEach(function(node, index){
         setTimeout(function(){
             document.getElementById(`node-${node.x+1}-${node.y+1}`).classList.add("viewed");
@@ -99,26 +103,29 @@ export default {
               }, 66 * index);
           });
         }, 66*visitedNodes.length);
+      
+
     });
     },
     resetGrid(){
-      this.startNodeX = 1;
-      this.startNodeY = 1;
-      this.endNodeX = 20;
-      this.endNodeY = 20;
+        this.startNodeX = 1;
+        this.startNodeY = 1;
+        this.endNodeX = 20;
+        this.endNodeY = 20;
 
-      let gridNode = document.querySelectorAll('.grid-node');
-      
-      gridNode.forEach(function(node){
-        node.classList.remove('viewed', 'path')
-      })
+        this.hasVisualisation = false;
+
+        let gridNode = document.querySelectorAll('.grid-node');
+        
+        gridNode.forEach(function(node){
+          node.classList.remove('viewed', 'path')
+        })
     }
   },
   mounted: function() {
     this.nodeHeight = this.$refs.algoGrid.clientHeight/this.rows-2;
     this.nodeWidth = this.$refs.algoGrid.clientWidth/this.cols-2;
-  }
-
+  },
 }
 </script>
 
