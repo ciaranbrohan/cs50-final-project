@@ -86,8 +86,9 @@ export default {
       this.hasVisualisation = true;
    },
     visualiseAlgo(shortestPath, visitedNodes){
+      this.runningVisualisation = true;
 
-      let visulatisationLength = 66 * visitedNodes.length;
+      let visulatisationLength = 66 * visitedNodes.length + 66 * shortestPath.length;
       console.log(visulatisationLength)
       visitedNodes.forEach(function(node, index){
         setTimeout(function(){
@@ -102,12 +103,19 @@ export default {
                   document.getElementById(`node-${node.x+1}-${node.y+1}`).classList.add("path");
               }, 66 * index);
           });
-        }, 66*visitedNodes.length);
-      
-
+        }, 66*visitedNodes.length)
     });
+        console.log(this.runningVisualisation)
+        setTimeout(function(){
+          console.log('called')
+          console.log(this.runningVisualisation)
+          this.runningVisualisation = false;
+          console.log(this.runningVisualisation)
+        }.bind(this), visulatisationLength);
     },
     resetGrid(){
+      console.log(this.runningVisualisation)
+      if(!this.runningVisualisation){
         this.startNodeX = 1;
         this.startNodeY = 1;
         this.endNodeX = 20;
@@ -120,6 +128,7 @@ export default {
         gridNode.forEach(function(node){
           node.classList.remove('viewed', 'path')
         })
+      }
     }
   },
   mounted: function() {
