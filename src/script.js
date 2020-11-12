@@ -44,10 +44,10 @@ let tableState = "";
 let gridNodes = document.querySelectorAll("#algo-grid .grid-node");
 
 
-let cols = 20;
-let rows = 20;
+let cols = 20; //moved
+let rows = 20; // moved
 
-let grid = new Array(cols);
+let grid = new Array(cols); //moved
 
 let openSet = [];
 let closedSet = [];
@@ -61,47 +61,10 @@ let endx = cols-1;
 let endy = rows-1;
 
 
-function Node (i,j){
-    this.x = i;
-    this.y = j;
-    this.f = 0;
-    this.g = 0;
-    this.h = 0;
-    this.previous = undefined;
-    this.neighbors = [];
-
-
-    this.show = function(color){
-        return "<div id='node-" + this.x + "-"+ this.y +"' class='grid-node' style='width:"+w+"px; height:"+w+"px'></div>";
-    }
-
-    this.addNeighbors = function(grid){
-        let x = this.x;
-        let y = this.y;
-
-        if (x < cols - 1 ) {
-            this.neighbors.push(grid[x + 1][y]);
-        }
-        if (x > 0) {
-            this.neighbors.push(grid[x - 1][y]);
-        }
-        if(y < rows - 1)
-        {
-            this.neighbors.push(grid[x][y + 1]);
-        }
-        if (y > 0) {
-            this.neighbors.push(grid[x][y - 1]);
-        }
-    }
-}
-
 
 function setup() {
 
-    w = renderGrid.offsetWidth/cols - 2 ;
-
-    h = renderGrid.offsetHeight/rows - 2 ;
-
+ 
     for(var i = 0; i<cols; i++)
     {
         grid[i] = new Array(rows);
