@@ -4,8 +4,9 @@ calculate(grid, startx, starty, endx, endy){
     function heuristic (a,b){   
         let xChange = Math.abs(a.x - b.x);
         let yChange = Math.abs(a.y - b.y);
-    
+
         return xChange + yChange;
+
     }
     function removeFromArray(arr, elm) {
         for( var i = arr.length-1; i>=0; i--) 
