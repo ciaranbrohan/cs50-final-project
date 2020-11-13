@@ -161,7 +161,6 @@ export default {
     },
     resetGrid(){
       if(!this.runningVisualisation){
-        console.log(this.range)
         this.range = 0;
         this.startNodeX = 0;
         this.startNodeY = 0;
