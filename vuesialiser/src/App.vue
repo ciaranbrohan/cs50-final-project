@@ -1,11 +1,11 @@
 <template>
   <div id="app">
     <div id="algo-grid" ref="algoGrid" style="width:400px; height:400px;" v-on:mousedown="mouseDown" v-on:mouseup="mouseup">      
-      <div v-for="row in rows" class="rows" :key="row">
-        <div v-for="col in cols" class="col" :key="col">
-          <Node class="start" v-if="col === startNodeX && row === startNodeY" :msg="col" :x="col" :y="row" :height="nodeHeight" :width="nodeWidth" :id="'node-'+col+'-'+row"/>
-          <Node class="end" v-else-if="col === endNodeX && row === endNodeY" :msg="col" :x="col" :y="row" :height="nodeHeight" :width="nodeWidth" :id="'node-'+col+'-'+row"/>
-          <Node v-else :msg="col" :x="col" :y="row" :height="nodeHeight" :width="nodeWidth" :id="'node-'+col+'-'+row"/>
+      <div v-for="(row, index) in gridArray" class="rows" :key="index">
+        <div v-for="(col, index) in row" class="col" :key="index">
+          <Node class="start" v-if="col.x === startNodeX && col.y === startNodeY"  :x="col.x" :y="col.y" :height="nodeHeight" :width="nodeWidth" :id="'node-'+col.x+'-'+col.y"/>
+          <Node class="end" v-else-if="col.x === endNodeX && col.y === endNodeY" :x="col.x" :y="col.y" :height="nodeHeight" :width="nodeWidth" :id="'node-'+col.x+'-'+col.y"/>
+          <Node v-else :x="col.x" :y="col.y" :height="nodeHeight" :width="nodeWidth" :id="'node-'+col.x+'-'+col.y" :wall="col.wall"/>
         </div>
       </div>
     </div>
@@ -17,7 +17,8 @@
 <script>
 import Node from './components/Node.vue'
 import grid from './lib/grid/grid'
-import astar from './lib/algorithms/astar'
+//import astar from './lib/algorithms/astar'
+import dijkstra from './lib/algorithms/dijkstra'
 
 
 export default {
@@ -31,40 +32,48 @@ export default {
       rows: 20,
       nodeHeight: 0,
       nodeWidth: 0,
-      startNodeX: 1,
-      startNodeY: 1,
-      endNodeX: 20,
-      endNodeY: 20,
+      startNodeX: 0,
+      startNodeY: 0,
+      endNodeX: 19,
+      endNodeY: 19,
       mousedownID: -1,
       changingNode: "",
       hasVisualisation: false,
-      runningVisualisation: false
-
+      runningVisualisation: false,
+      gridArray: "",
     }
   },
   methods: {
     mouseDown(event){
       if(!this.hasVisualisation) {
-       if(this.mousedownID==-1) {
-          if(event.target.classList.contains("start")){
-            this.changingNode = "start"
-          }
-          if(event.target.classList.contains("end")){
-            this.changingNode = "end"
-          }
-          this.mousedownID = setInterval(this.whilemousedown(), 100 /*execute every 100ms*/);
-       }
+        if(event.target.classList.contains("start")){
+          this.changingNode = "start"
+        }
+        if(event.target.classList.contains("end")){
+          this.changingNode = "end"
+        }
+        if(!event.target.classList.contains("start") && !event.target.classList.contains("end")) {
+          const x = event.target.getAttribute("data-x")
+          const y = event.target.getAttribute("data-y")
+          const newGrid = this.gridArray.slice();
+          const node = newGrid[x][y];
+
+          node.wall = !node.wall;
+
+          newGrid[x][y] = node;
+
+          this.gridArray = newGrid
+        }
+
       }
     },
     whilemousedown() {
-      console.log()
+      console.log('set wall')
+
       //todo add functionality around the drag
     },
     mouseup(event) {
     if(!this.hasVisualisation) {
-      if(this.mousedownID!=-1) {  //Only stop if exists
-        clearInterval(this.mousedownID);
-        this.mousedownID=-1;
         if(this.changingNode === "start"){
           this.startNodeX=parseInt(event.target.getAttribute("data-x"))
           this.startNodeY=parseInt(event.target.getAttribute("data-y"))
@@ -73,15 +82,11 @@ export default {
           this.endNodeX=parseInt(event.target.getAttribute("data-x"))
           this.endNodeY=parseInt(event.target.getAttribute("data-y"))
         }
-
         this.changingNode = ""
-  
-        }
-    }
+      }
     },
     runAlgo(){
-      let gridRender = grid.init(this.cols, this.rows);      
-      let algo = astar.calculate(gridRender.render, this.startNodeX, this.startNodeY, this.endNodeX, this.endNodeY)
+      let algo = dijkstra.calculate(this.gridArray, this.startNodeX, this.startNodeY, this.endNodeX, this.endNodeY)
       this.visualiseAlgo(algo.shortestPath, algo.visitedSet)
       this.hasVisualisation = true;
    },
@@ -89,37 +94,31 @@ export default {
       this.runningVisualisation = true;
 
       let visulatisationLength = 66 * visitedNodes.length + 66 * shortestPath.length;
-      console.log(visulatisationLength)
       visitedNodes.forEach(function(node, index){
         setTimeout(function(){
-            document.getElementById(`node-${node.x+1}-${node.y+1}`).classList.add("viewed");
+            document.getElementById(`node-${node.x}-${node.y}`).classList.add("viewed");
         }, 66 * index);
-
 
         setTimeout(function(){
           shortestPath.forEach(function(node, index){
               setTimeout(function(){
-                  document.getElementById(`node-${node.x+1}-${node.y+1}`).classList.remove("viewed");
-                  document.getElementById(`node-${node.x+1}-${node.y+1}`).classList.add("path");
+                  document.getElementById(`node-${node.x}-${node.y}`).classList.remove("viewed");
+                  document.getElementById(`node-${node.x}-${node.y}`).classList.add("path");
               }, 66 * index);
           });
         }, 66*visitedNodes.length)
-    });
-        console.log(this.runningVisualisation)
+    }, this);
         setTimeout(function(){
-          console.log('called')
           console.log(this.runningVisualisation)
           this.runningVisualisation = false;
-          console.log(this.runningVisualisation)
         }.bind(this), visulatisationLength);
     },
     resetGrid(){
-      console.log(this.runningVisualisation)
       if(!this.runningVisualisation){
-        this.startNodeX = 1;
-        this.startNodeY = 1;
-        this.endNodeX = 20;
-        this.endNodeY = 20;
+        this.startNodeX = 0;
+        this.startNodeY = 0;
+        this.endNodeX = 19;
+        this.endNodeY = 19;
 
         this.hasVisualisation = false;
 
@@ -134,6 +133,7 @@ export default {
   mounted: function() {
     this.nodeHeight = this.$refs.algoGrid.clientHeight/this.rows-2;
     this.nodeWidth = this.$refs.algoGrid.clientWidth/this.cols-2;
+    this.gridArray = grid.init(this.cols, this.rows).render
   },
 }
 </script>
@@ -197,6 +197,9 @@ export default {
     background-image: url('assets/target.svg');
  }
 
+.is-wall {
+  background: #000;
+}
 
 .viewed {
     background-color: rgba(0, 190, 218, 0.75);

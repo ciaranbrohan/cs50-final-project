@@ -1,12 +1,6 @@
-let astar = {
+let dijkstra = {
 calculate(grid, startx, starty, endx, endy){ 
 
-    function heuristic (a,b){   
-        let xChange = Math.abs(a.x - b.x);
-        let yChange = Math.abs(a.y - b.y);
-    
-        return xChange + yChange;
-    }
     function removeFromArray(arr, elm) {
         for( var i = arr.length-1; i>=0; i--) 
         {      
@@ -34,7 +28,7 @@ calculate(grid, startx, starty, endx, endy){
         // Grab the lowest f(x) to process next
         var lowestIndex = 0;
         for (let i = 0; i<openSet.length; i++) {
-            if(openSet[i].f < openSet[lowestIndex].f) {
+            if(openSet[i].g < openSet[lowestIndex].g) {
                 lowestIndex = i;
             }
         }
@@ -79,7 +73,7 @@ calculate(grid, startx, starty, endx, endy){
                 // This the the first time we have arrived at this node, it must be the best
                 // Also, we need to take the h (heuristic) score since we haven't done so yet
                 gScoreIsBest = true;
-                neighbor.h = heuristic(neighbor, end);
+                // neighbor.h = heuristic(neighbor, end);
                 openSet.push(neighbor);
             }
             else if(gScore < neighbor.g) {
@@ -92,7 +86,6 @@ calculate(grid, startx, starty, endx, endy){
             //  just how good it really is...
             neighbor.previous = currentNode;
             neighbor.g = gScore;
-            neighbor.f = neighbor.g + neighbor.h;
             }
         }
 
@@ -108,4 +101,4 @@ return{
 
 }
 
-export default astar
+export default dijkstra

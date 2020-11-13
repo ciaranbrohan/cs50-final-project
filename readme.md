@@ -5,14 +5,14 @@
 - [x] algo animation 
 - [x] stop users swapping nodes when animation is happening
 - [x] reset nodes when user moves start and end point
+- [x] Allow Obsticles to be added
+- [x] Allow Obsticles to be added
+- [ ] Random Obsticles generation
+- [x] djkstra algorithm 
 - [ ] ui
-- [ ] Allow walls to be added
-- [ ] Allow users to register
-- [ ] Allow users to save grids 
-- [ ] Random block generation
-
+- [ ] explainer modals
 
 ### Next steps
-
-- [ ] djkstra algorithm 
-- [ ] research other algorithms
+- [ ] allow user to see history of algorithm
+- [ ] maze algorithm
+- [ ] allow playback of historical algorithm

@@ -1,6 +1,5 @@
 <template>
-  <div class="grid-node" :data-x="x" :data-y="y" :style="{width: width + 'px', height : height + 'px'}" >
-
+  <div :class="{'grid-node':true, 'is-wall': wall}" :data-x="x" :data-y="y" :style="{width: width + 'px', height : height + 'px'}" >
   </div>
 </template>
 
@@ -12,8 +11,11 @@ export default {
     x: Number,
     y: Number,
     height: Number,
-    width: Number
-  }
+    width: Number,
+    wall: Boolean
+  },
+
+
 }
 </script>
 

@@ -11,6 +11,7 @@ let grid = {
             this.h = 0;
             this.previous = undefined;
             this.neighbors = [];
+            this.wall = false;
     
             this.addNeighbors = function(grid){
                 let x = this.x;
