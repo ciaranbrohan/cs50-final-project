@@ -7,8 +7,10 @@
 - [x] reset nodes when user moves start and end point
 - [x] Allow Obsticles to be added
 - [x] Allow Obsticles to be added
+- [x] Allow users to select algorithm
 - [ ] Random Obsticles generation
 - [x] djkstra algorithm 
+- [x] clear visulatisation
 - [ ] ui
 - [ ] explainer modals
 

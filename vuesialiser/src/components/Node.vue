@@ -1,5 +1,5 @@
 <template>
-  <div :class="{'grid-node':true, 'is-wall': wall}" :data-x="x" :data-y="y" :style="{width: width + 'px', height : height + 'px'}" >
+  <div :class="{'grid-node':true, 'is-wall': wall, 'start': start, 'end': end}" :data-x="x" :data-y="y" :style="{width: width + 'px', height : height + 'px'}" >
   </div>
 </template>
 
@@ -10,11 +10,41 @@ export default {
     col: Number,
     x: Number,
     y: Number,
+    startNodeX: Number,
+    startNodeY: Number,
+    endNodeX: Number,
+    endNodeY: Number,
     height: Number,
     width: Number,
-    wall: Boolean
+    isWall: Boolean,
   },
+  computed: {
+    start: function() {
+      if(this.x === this.startNodeX && this.y === this.startNodeY){
+        return true;
+      }
+      return false;
+    },
+    end: function() {
+      if(this.x === this.endNodeX && this.y === this.endNodeY){
+        return true;
+      }
+      return false;
+    },
+    wall: function() {
+      if(this.start){
+        return false;
+      }
+      if(this.end){
+        return false;
+      }
 
+      if(this.isWall) {
+        return true;
+      }
+      return false
+    }
+  }
 
 }
 </script>

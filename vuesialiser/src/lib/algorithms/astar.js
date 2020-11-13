@@ -95,7 +95,6 @@ calculate(grid, startx, starty, endx, endy){
             neighbor.f = neighbor.g + neighbor.h;
             }
         }
-
     }
 
 
