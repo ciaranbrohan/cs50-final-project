@@ -528,4 +528,10 @@ a {
   transition: border 0.25s linear, color 0.25s linear, background-color 0.25s linear;
 }
 
+
+@media only screen and (max-width: 767px) {
+  .modal__body {
+    width: 80%;
+  }
+}
 </style>
