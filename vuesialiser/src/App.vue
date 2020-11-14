@@ -18,7 +18,7 @@
           <li><a href="#" @click="resetGrid" class="nav-link">Reset</a></li>
           <li><input @change="addWalls($event)" type="range" id="walls" v-model="range"
          min="0" max="40" value="0"  step="10"></li>
-          <li><a href="#" @click="runAlgo" class="nav-link">Visualise!</a></li>
+          <li><a href="#" @click="runAlgo" class="nav-link btn btn--default">Visualise!</a></li>
         </ul>
       </div>
 
@@ -33,6 +33,14 @@
         </td>
       </tr>
     </table>
+
+    <div class="modal"> 
+      <div class="modal__body">
+        <h2>{{modalHeader}}</h2>
+        <p>{{modalParagraph}}</p>
+        <a href="#" id="skipBtn" class="btn btn--default left">Skip</a><a href="#" id="nextBtn"  class="btn btn--default right">Next</a>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -66,7 +74,9 @@ export default {
       selectedAlgo: "Pick Algorithm",
       algo: 0,
       range:0,
-      dropDownActive:""
+      dropDownActive:"",
+      modalHeader:"Welcome to Pathfinding Visualizer!",
+      modalParagraph: "This short tutorial will walk you through all of the features of this application."
     }
   },
   methods: {
@@ -226,7 +236,14 @@ export default {
           node.classList.remove('viewed', 'path')
         })
       }
+    },
+    nextBtn() {
+      console.log('next')
+    },
+    skipBtn() {
+      console.log('previous')
     }
+  
   },
   mounted: function() {
     let windowHeight = window.innerHeight-93;
@@ -419,6 +436,53 @@ margin-left: auto;
   color: #fff;
 }
 
+#nextBtn {
+  color: #ffffff;
+  background-color: #1abc9c;
+  position: absolute;
+  right: 2%;
+  bottom: 4%;
+}
+
+#skipBtn {
+  color: #ffffff;
+  background-color: #1abc9c;
+  position: absolute;
+  left: 2%;
+  bottom: 4%;
+}
+
+/*-- --*/
+.modal {
+position:absolute; 
+top:0; 
+left:0; 
+bottom:0; 
+right:0; 
+background: rgba(0, 0, 0, 0.6);
+}
+
+.modal__body {
+  position: absolute;
+  z-index: 3;
+  background-color: rgba(255, 255, 255, 1);
+  width: 50%;
+  height: 70%;
+  border: 2px solid #34495e;
+  border-radius: 4px;
+  text-align: center;
+  float: right;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: auto;
+  margin-bottom: auto;
+  bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+
 #walls {
   position: relative;
   top: 6px;
@@ -441,7 +505,27 @@ a {
 }
 
 
-/*-- grid --*/
+/*-- buttons --*/
 
+.btn--default {
+  color: #ffffff;
+  background-color: #bdc3c7;
+}
+
+.btn {
+  border: none;
+  border-top-color: currentcolor;
+  border-right-color: currentcolor;
+  border-bottom-color: currentcolor;
+  border-left-color: currentcolor;
+  font-size: 15px;
+  font-weight: normal;
+  line-height: 15px;
+  border-radius: 4px;
+  padding: 10px 15px;
+  -webkit-font-smoothing: subpixel-antialiased;
+  -webkit-transition: border 0.25s linear, color 0.25s linear, background-color 0.25s linear;
+  transition: border 0.25s linear, color 0.25s linear, background-color 0.25s linear;
+}
 
 </style>
