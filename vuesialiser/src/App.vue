@@ -7,10 +7,18 @@
         <div class="navbar__header">
           <a href="#" class="navbar__brand">Pathfinderr</a>
         </div>
-        <ul class="nav navbar__nav"> 
-          <li></li>
-          <li></li>
-          <li></li>
+        <ul class="nav navbar__nav navbar__dropdown-menu"> 
+          <li>
+            <a href="#" id="pickAlgorithm" @click="toggleDropdown($event)"  class="nav-link">Pick Algorithm</a>
+            <ul :class="{ 'open' : dropDownActive === 'pickAlgorithm' }">
+              <li><a href="#" @click="selectAlgo('A*')" >A*</a></li>
+              <li><a href="#" @click="selectAlgo('Dijkstra')" >Dijkstra</a></li>
+            </ul>
+          
+          </li>
+          <li><a href="#" @click="clearVis" class="nav-link">Clear path</a></li>
+          <li><a href="#" @click="resetGrid" class="nav-link">Reset</a></li>
+          <li><a href="#" @click="runAlgo" class="nav-link">Visualise!</a></li>
         </ul>
       </div>
 
@@ -25,14 +33,11 @@
         </div>
       </div>
     </div>
-    <button v-on:click="runAlgo">Visualise!</button>
-    <button v-on:click="clearVis">Clear Visualisation</button>
-    <button v-on:click="resetGrid">Reset</button>
-    <select @change="selectAlgo($event)" class="form-control" v-model="selectedAlgo">
+    <!-- <select @change="selectAlgo($event)" class="form-control" v-model="selectedAlgo">
       <option disabled value="">Please select one</option>
       <option value="A*">A*</option>
       <option value="Dijkstra">Dijkstra</option>
-    </select>  
+    </select>   -->
       <input @change="addWalls($event)" type="range" id="cowbell" name="cowbell" v-model="range"
          min="0" max="40" value="0"  step="10"> 
   </div>
@@ -67,10 +72,21 @@ export default {
       gridArray: "",
       selectedAlgo: "",
       algo: 0,
-      range:0
+      range:0,
+      dropDownActive:""
     }
   },
   methods: {
+    toggleDropdown(event){
+      
+      if (this.dropDownActive != event.target.id)
+      {
+      this.dropDownActive = event.target.id;
+      return
+      }
+
+      this.dropDownActive = "";
+    },
     mouseDown(event){
       if(!this.hasVisualisation) {
         if(event.target.classList.contains("start")){
@@ -107,15 +123,17 @@ export default {
         this.changingNode = ""
       }
     },
-    selectAlgo(){
+    selectAlgo(selected){
+      this.selectedAlgo = selected;
       let algo;
-      if(this.selectedAlgo === "A*") {
+      if(selected === "A*") {
         algo = astar
       }
-      if(this.selectedAlgo === "Dijkstra") {
+      if(selected === "Dijkstra") {
         algo = dijkstra
       }
       this.algo = algo;
+      console.log(this.algo)
     },
     addWalls(event){
       let chanceOfWall = event.target.value/100;
@@ -322,12 +340,11 @@ margin-left: auto;
 
 .navbar__brand {
   float: left;
-  height: 50px;
   font-size: 20px;
-  line-height: 1.042;
-  height: 53px;
+  line-height: 55px;
+  height: 55px;
   font-weight: 700;
-  padding: 14px 21px;
+  padding: 0 21px;
 }
 
 .navbar--green {
@@ -337,6 +354,47 @@ margin-left: auto;
 .navbar--green .navbar__brand {
     color: #fff;
 }
+
+.navbar__nav li {
+  display: inline-block;
+  list-style: none;
+  height: 55px; 
+  line-height: 55px; /* should be the same as height */
+  padding: 0 15px; /* "0" sets top and bottom padding to none */
+}
+
+
+.navbar__dropdown-menu {
+  display: relative;
+}
+
+.navbar__dropdown-menu ul {
+  display: none;
+  position: absolute;
+  z-index: 1000;
+  background-color: #41B3A3;
+  min-width: 220px;
+  border: none;
+  margin-top: 0px;
+  padding: 0;
+  font-size: 14px;
+  border-radius: 4px;
+  box-shadow: none;
+}
+
+.navbar__dropdown-menu ul.open {
+  display: block;
+}
+
+.navbar__dropdown-menu ul li{
+  display: block;
+}
+
+
+.navbar--green a {
+  color: #fff;
+}
+
 
 a {
   text-decoration: none;
