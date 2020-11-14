@@ -1,5 +1,23 @@
 <template>
   <div id="app">
+
+
+    <header class="navbar navbar--green">
+      <div class="container-fluid">
+        <div class="navbar__header">
+          <a href="#" class="navbar__brand">Pathfinderr</a>
+        </div>
+        <ul class="nav navbar__nav"> 
+          <li></li>
+          <li></li>
+          <li></li>
+        </ul>
+      </div>
+
+    </header>
+
+
+
     <div id="algo-grid" ref="algoGrid" style="width:400px; height:400px;" v-on:mousedown="mouseDown" v-on:mouseup="mouseup">      
       <div v-for="(row, index) in gridArray" class="rows" :key="index">
         <div v-for="(col, index) in row" class="col" :key="index">
@@ -179,8 +197,8 @@ export default {
     }
   },
   mounted: function() {
-    this.nodeHeight = this.$refs.algoGrid.clientHeight/this.rows-2;
-    this.nodeWidth = this.$refs.algoGrid.clientWidth/this.cols-2;
+    this.nodeHeight = this.$refs.algoGrid.clientHeight/this.rows;
+    this.nodeWidth = this.$refs.algoGrid.clientWidth/this.cols;
     this.gridArray = grid.init(this.cols, this.rows).render
   },
 }
@@ -232,8 +250,6 @@ export default {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
 }
 
 .start {
@@ -258,4 +274,73 @@ export default {
     animation: shortestPath 100ms ease-out;
     background-color: rgb(255, 254, 106);
 }
+
+/*-- CSS reset --*/
+html {
+  box-sizing: border-box;
+  font-size: 16px;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+body, h1, h2, h3, h4, h5, h6, p, ol, ul {
+  margin: 0;
+  padding: 0;
+  font-weight: normal;
+}
+
+ol, ul {
+  list-style: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/*-- container, grid, utlities --*/
+
+.container-fluid {
+padding-right: 15px;
+padding-left: 15px;
+margin-right: auto;
+margin-left: auto;
+}
+
+/*-- container, grid, utlities --*/
+.navbar {
+    font-size: 16px;
+    min-height: 53px;
+    margin-bottom: 30px;
+}
+
+.navbar__header {
+  margin: 0 -15px;
+}
+
+.navbar__brand {
+  float: left;
+  height: 50px;
+  font-size: 20px;
+  line-height: 1.042;
+  height: 53px;
+  font-weight: 700;
+  padding: 14px 21px;
+}
+
+.navbar--green {
+    background-color: #41B3A3;
+}
+
+.navbar--green .navbar__brand {
+    color: #fff;
+}
+
+a {
+  text-decoration: none;
+}
+
+
 </style>
