@@ -1,7 +1,10 @@
 let grid = {
-    init(cols, rows){ 
+    init(rows, cols){ 
     
-        let grid = new Array(cols); //moved
+
+        console.log(rows)
+        console.log(cols)
+        let grid = new Array(rows); //moved
     
         function Node (i,j){
             this.x = i;
@@ -17,13 +20,13 @@ let grid = {
                 let x = this.x;
                 let y = this.y;
     
-                if (x < cols - 1 ) {
+                if (x < rows - 1 ) {
                     this.neighbors.push(grid[x + 1][y]);
                 }
                 if (x > 0) {
                     this.neighbors.push(grid[x - 1][y]);
                 }
-                if(y < rows - 1)
+                if(y < cols - 1)
                 {
                     this.neighbors.push(grid[x][y + 1]);
                 }
@@ -33,22 +36,22 @@ let grid = {
             }
         }
     
-        for(let i = 0; i<cols; i++)
+        for(let i = 0; i<rows; i++)
         {
-            grid[i] = new Array(rows);
+            grid[i] = new Array(cols);
         }
     
     
         //loops set array and creates nodes for each
-        for(let i = 0; i<cols; i++) {
-            for(let j = 0; j<rows; j++)
+        for(let i = 0; i<rows; i++) {
+            for(let j = 0; j<cols; j++)
             {
                 grid[i][j] = new Node(i,j);
             }
         }
     
-        for(let i = 0; i<cols; i++) {
-            for(let j = 0; j<rows; j++)
+        for(let i = 0; i<rows; i++) {
+            for(let j = 0; j<cols; j++)
             {
                 grid[i][j].addNeighbors(grid);
             }

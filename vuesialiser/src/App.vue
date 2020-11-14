@@ -1,7 +1,5 @@
 <template>
   <div id="app" ref="app">
-
-
     <header class="navbar navbar--green">
       <div class="container-fluid">
         <div class="navbar__header">
@@ -28,13 +26,13 @@
 
 
 
-    <div id="algo-grid" ref="algoGrid" v-on:mousedown="mouseDown" v-on:mouseup="mouseup">      
-      <div v-for="(row, index) in gridArray" class="rows" :key="index">
-        <div v-for="(col, index) in row" class="col" :key="index">
+    <table id="algo-grid" ref="algoGrid" v-on:mousedown="mouseDown" v-on:mouseup="mouseup" cellspacing="0">      
+      <tr v-for="(row, index) in gridArray" class="cols" :key="index">
+        <td v-for="(col, index) in row" class="col" :key="index">
           <Node :x="col.x" :y="col.y" :startNodeX="startNodeX" :startNodeY="startNodeY" :endNodeX="endNodeX" :endNodeY="endNodeY" :height="nodeHeight" :width="nodeWidth" :id="'node-'+col.x+'-'+col.y" :isWall="col.wall"/>
-        </div>
-      </div>
-    </div>
+        </td>
+      </tr>
+    </table>
   </div>
 </template>
 
@@ -52,14 +50,14 @@ export default {
   },
   data(){
     return {
-      cols: 20,
       rows: 20,
-      nodeHeight: 0,
-      nodeWidth: 0,
+      cols: 20,
+      nodeHeight: 25,
+      nodeWidth: 25,
       startNodeX: 0,
       startNodeY: 0,
-      endNodeX: 19,
-      endNodeY: 19,
+      endNodeX: 0,
+      endNodeY: 0,
       mousedownID: -1,
       changingNode: "",
       hasVisualisation: false,
@@ -213,13 +211,14 @@ export default {
     resetGrid(){
       if(!this.runningVisualisation){
         this.range = 0;
-        this.startNodeX = 0;
-        this.startNodeY = 0;
-        this.endNodeX = 19;
-        this.endNodeY = 19;
+        this.startNodeX = Math.floor((this.rows/2)-1);
+        this.startNodeY = Math.floor(this.cols/6);
+
+        this.endNodeX = Math.floor((this.rows/2)-1);
+        this.endNodeY = Math.floor((this.cols/6)*5);
 
         this.hasVisualisation = false;
-        this.gridArray = grid.init(this.cols, this.rows).render;
+        this.gridArray = grid.init(this.rows, this.cols).render;
 
         let gridNode = document.querySelectorAll('.grid-node');
         
@@ -230,10 +229,18 @@ export default {
     }
   },
   mounted: function() {
-    console.log(Math.round(this.$refs.app.clientWidth/25));
-    this.nodeHeight = this.$refs.algoGrid.clientHeight/this.rows;
-    this.nodeWidth = this.$refs.algoGrid.clientWidth/this.cols;
-    this.gridArray = grid.init(this.cols, this.rows).render
+    let windowHeight = window.innerHeight-93;
+
+    this.cols = Math.floor(this.$refs.algoGrid.clientWidth/25);
+    this.rows =  Math.floor(windowHeight/25);
+
+    this.startNodeX = Math.floor((this.rows/2)-1);
+    this.startNodeY = Math.floor(this.cols/6);
+
+    this.endNodeX = Math.floor((this.rows/2)-1);
+    this.endNodeY = Math.floor((this.cols/6)*5);
+
+    this.gridArray = grid.init(this.rows, this.cols).render
   },
 }
 </script>
@@ -348,8 +355,7 @@ margin-left: auto;
 /*-- navbar --*/
 .navbar {
     font-size: 16px;
-    min-height: 53px;
-    margin-bottom: 30px;
+    min-height: 55px;
 }
 
 .navbar__header {
@@ -422,6 +428,18 @@ margin-left: auto;
 a {
   text-decoration: none;
 }
+
+#algo-grid {
+  padding:20px 5%;
+  width: 90%;
+}
+
+#algo-grid td{
+  border-spacing: 0;
+  border-collapse: collapse;
+  padding:0;
+}
+
 
 /*-- grid --*/
 
