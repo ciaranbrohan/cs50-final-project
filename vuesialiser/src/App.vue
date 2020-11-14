@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" ref="app">
 
 
     <header class="navbar navbar--green">
@@ -9,7 +9,7 @@
         </div>
         <ul class="nav navbar__nav navbar__dropdown-menu"> 
           <li>
-            <a href="#" id="pickAlgorithm" @click="toggleDropdown($event)"  class="nav-link">Pick Algorithm</a>
+            <a href="#" id="pickAlgorithm" @click="toggleDropdown($event)"  class="nav-link">{{selectedAlgo}}</a>
             <ul :class="{ 'open' : dropDownActive === 'pickAlgorithm' }">
               <li><a href="#" @click="selectAlgo('A*')" >A*</a></li>
               <li><a href="#" @click="selectAlgo('Dijkstra')" >Dijkstra</a></li>
@@ -18,6 +18,8 @@
           </li>
           <li><a href="#" @click="clearVis" class="nav-link">Clear path</a></li>
           <li><a href="#" @click="resetGrid" class="nav-link">Reset</a></li>
+          <li><input @change="addWalls($event)" type="range" id="walls" v-model="range"
+         min="0" max="40" value="0"  step="10"></li>
           <li><a href="#" @click="runAlgo" class="nav-link">Visualise!</a></li>
         </ul>
       </div>
@@ -26,20 +28,13 @@
 
 
 
-    <div id="algo-grid" ref="algoGrid" style="width:400px; height:400px;" v-on:mousedown="mouseDown" v-on:mouseup="mouseup">      
+    <div id="algo-grid" ref="algoGrid" v-on:mousedown="mouseDown" v-on:mouseup="mouseup">      
       <div v-for="(row, index) in gridArray" class="rows" :key="index">
         <div v-for="(col, index) in row" class="col" :key="index">
           <Node :x="col.x" :y="col.y" :startNodeX="startNodeX" :startNodeY="startNodeY" :endNodeX="endNodeX" :endNodeY="endNodeY" :height="nodeHeight" :width="nodeWidth" :id="'node-'+col.x+'-'+col.y" :isWall="col.wall"/>
         </div>
       </div>
     </div>
-    <!-- <select @change="selectAlgo($event)" class="form-control" v-model="selectedAlgo">
-      <option disabled value="">Please select one</option>
-      <option value="A*">A*</option>
-      <option value="Dijkstra">Dijkstra</option>
-    </select>   -->
-      <input @change="addWalls($event)" type="range" id="cowbell" name="cowbell" v-model="range"
-         min="0" max="40" value="0"  step="10"> 
   </div>
 </template>
 
@@ -70,7 +65,7 @@ export default {
       hasVisualisation: false,
       runningVisualisation: false,
       gridArray: "",
-      selectedAlgo: "",
+      selectedAlgo: "Pick Algorithm",
       algo: 0,
       range:0,
       dropDownActive:""
@@ -133,37 +128,57 @@ export default {
         algo = dijkstra
       }
       this.algo = algo;
-      console.log(this.algo)
+      this.dropDownActive = "";
     },
     addWalls(event){
-      let chanceOfWall = event.target.value/100;
-      const newGrid = this.gridArray.slice();
-      
-      for(var i = 0; i < this.gridArray.length; i++) {
-        var col = this.gridArray[i];
-        for(var j = 0; j < col.length; j++) {
-        
-          let node = newGrid[i][j];
-          node.wall = false;
-          if(Math.random() < chanceOfWall) {
-            node.wall = true
-          }
-          newGrid[i][j] = node;
+      if(!this.runningVisualisation){
+        let chanceOfWall = event.target.value/100;
+        const newGrid = this.gridArray.slice();
+        this.hasVisualisation = false;
+        for(var i = 0; i < this.gridArray.length; i++) {
+          var col = this.gridArray[i];
+          for(var j = 0; j < col.length; j++) {
 
-          this.gridArray = newGrid
+            document.getElementById(`node-${i}-${j}`).classList.remove('viewed', 'path')
+
+            let node = newGrid[i][j];
+            node.wall = false;
+            if(Math.random() < chanceOfWall) {
+              node.wall = true
+            }
+            newGrid[i][j] = node;
+
+            this.gridArray = newGrid
+          }
         }
       }
     },
     runAlgo(){
-      if(this.selectedAlgo != "") {
+      if(this.selectedAlgo != "Pick Algorithm") {
+        
         let algo = this.algo.calculate(this.gridArray, this.startNodeX, this.startNodeY, this.endNodeX, this.endNodeY);
+        console.log(this.gridArray)
+        console.log(algo.shortestPath )
+        console.log(algo.visitedSet)
         if(algo.shortestPath.length > 0 || algo.visitedSet.length  > 0) {
+          console.log('called')
           this.visualiseAlgo(algo.shortestPath, algo.visitedSet);
           this.hasVisualisation = true;
+        }
+        else {
+          confirm('no valid path')
+          this.resetGrid()
         }
       }
    },
     visualiseAlgo(shortestPath, visitedNodes){
+
+        let gridNode = document.querySelectorAll('.grid-node');
+        
+        gridNode.forEach(function(node){
+          node.classList.remove('viewed', 'path')
+        })
+
       this.runningVisualisation = true;
 
       let visulatisationLength = 66 * visitedNodes.length + 66 * shortestPath.length;
@@ -215,6 +230,7 @@ export default {
     }
   },
   mounted: function() {
+    console.log(Math.round(this.$refs.app.clientWidth/25));
     this.nodeHeight = this.$refs.algoGrid.clientHeight/this.rows;
     this.nodeWidth = this.$refs.algoGrid.clientWidth/this.cols;
     this.gridArray = grid.init(this.cols, this.rows).render
@@ -318,6 +334,8 @@ img {
   height: auto;
 }
 
+
+
 /*-- container, grid, utlities --*/
 
 .container-fluid {
@@ -327,7 +345,7 @@ margin-right: auto;
 margin-left: auto;
 }
 
-/*-- container, grid, utlities --*/
+/*-- navbar --*/
 .navbar {
     font-size: 16px;
     min-height: 53px;
@@ -395,10 +413,17 @@ margin-left: auto;
   color: #fff;
 }
 
+#walls {
+  position: relative;
+  top: 6px;
+}
+
 
 a {
   text-decoration: none;
 }
+
+/*-- grid --*/
 
 
 </style>
