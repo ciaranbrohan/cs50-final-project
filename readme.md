@@ -11,10 +11,13 @@
 - [x] Random Obsticles generation
 - [x] djkstra algorithm 
 - [x] clear visulatisation
-- [ ] ui
-- [ ] explainer modals
+- [x] ui
+- [x] explainer modals
 
 ### Next steps
+- [ ] allow drag to set multiple walls
 - [ ] allow user to see history of algorithm
 - [ ] maze algorithm
 - [ ] allow playback of historical algorithm
+- [ ] improve path not found, intermittent bug here when large amount of walls exist
+- [ ] improve rendering of grid, error seems to appear when over 800 nodes 

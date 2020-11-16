@@ -18,7 +18,7 @@
           <li><a href="#" @click="resetGrid" class="nav-link">Reset</a></li>
           <li><input @change="addWalls($event)" type="range" id="walls" v-model="range"
          min="0" max="40" value="0"  step="10"></li>
-          <li><a href="#" @click="runAlgo" class="nav-link btn btn--default">Visualise!</a></li>
+          <li><a href="#" @click="runAlgo" class="nav-link btn btn--dark">Visualise!</a></li>
         </ul>
       </div>
 
@@ -26,19 +26,24 @@
 
 
 
-    <table id="algo-grid" ref="algoGrid" v-on:mousedown="mouseDown" v-on:mouseup="mouseup" cellspacing="0">      
-      <tr v-for="(row, index) in gridArray" class="cols" :key="index">
-        <td v-for="(col, index) in row" class="col" :key="index">
+    <table id="algo-grid" ref="algoGrid" v-on:mousedown="mouseDown" cellspacing="0">      
+      <div v-for="(row, index) in gridArray" class="cols" :key="index">
+        <div v-for="(col, index) in row" class="col" :key="index">
           <Node :x="col.x" :y="col.y" :startNodeX="startNodeX" :startNodeY="startNodeY" :endNodeX="endNodeX" :endNodeY="endNodeY" :height="nodeHeight" :width="nodeWidth" :id="'node-'+col.x+'-'+col.y" :isWall="col.wall"/>
-        </td>
-      </tr>
+        </div>
+      </div>
     </table>
 
-    <div class="modal"> 
+    <div class="modal" v-if="modalShow"> 
       <div class="modal__body">
-        <h2>{{modalHeader}}</h2>
-        <p>{{modalParagraph}}</p>
-        <a href="#" id="skipBtn" class="btn btn--default left">Skip</a><a href="#" id="nextBtn"  class="btn btn--default right">Next</a>
+        <div class="modal__content">
+          <h2>{{modalHeader}}</h2>
+          <p v-html="modalParagraph"></p>
+        </div>
+        <a v-if="noValidPath" href="#" @click="resetGrid" id="restBtn"  class="btn btn--dark btn--reset">Reset Grid</a>
+        <a v-if="noAlgorithm" href="#" @click="dismissModal" id="restBtn"  class="btn btn--dark btn--reset">Dismiss</a>
+        <a v-if="initalModal" href="#" @click="skipBtn" id="skipBtn" class="btn btn--dark left">Skip</a>
+        <a v-if="initalModal" href="#" @click="nextBtn" id="nextBtn"  class="btn btn--dark right">Next</a>
       </div>
     </div>
   </div>
@@ -58,8 +63,8 @@ export default {
   },
   data(){
     return {
-      rows: 20,
-      cols: 20,
+      rows: 25,
+      cols: 25,
       nodeHeight: 25,
       nodeWidth: 25,
       startNodeX: 0,
@@ -74,9 +79,13 @@ export default {
       selectedAlgo: "Pick Algorithm",
       algo: 0,
       range:0,
+      modalCount:0,
       dropDownActive:"",
       modalHeader:"Welcome to Pathfinding Visualizer!",
-      modalParagraph: "This short tutorial will walk you through all of the features of this application."
+      modalParagraph: "This short tutorial will walk you through all of the features of this application.",
+      modalShow: true,
+      noValidPath: false,
+      initalModal: true
     }
   },
   methods: {
@@ -92,6 +101,16 @@ export default {
     },
     mouseDown(event){
       if(!this.hasVisualisation) {
+        if(this.changingNode === "start"){
+          this.startNodeX=parseInt(event.target.getAttribute("data-x"))
+          this.startNodeY=parseInt(event.target.getAttribute("data-y"))
+        }
+        if(this.changingNode === "end"){
+          this.endNodeX=parseInt(event.target.getAttribute("data-x"))
+          this.endNodeY=parseInt(event.target.getAttribute("data-y"))
+        }
+        this.changingNode = ""
+
         if(event.target.classList.contains("start")){
           this.changingNode = "start"
         }
@@ -111,19 +130,6 @@ export default {
           this.gridArray = newGrid
         }
 
-      }
-    },
-    mouseup(event) {
-    if(!this.hasVisualisation) {
-        if(this.changingNode === "start"){
-          this.startNodeX=parseInt(event.target.getAttribute("data-x"))
-          this.startNodeY=parseInt(event.target.getAttribute("data-y"))
-        }
-        if(this.changingNode === "end"){
-          this.endNodeX=parseInt(event.target.getAttribute("data-x"))
-          this.endNodeY=parseInt(event.target.getAttribute("data-y"))
-        }
-        this.changingNode = ""
       }
     },
     selectAlgo(selected){
@@ -174,9 +180,20 @@ export default {
           this.hasVisualisation = true;
         }
         else {
-          confirm('no valid path')
-          this.resetGrid()
+          this.modalShow = true
+          this.noValidPath = true;
+          this.noAlgorithm = false;
+          this.initalModal = false;
+          this.modalHeader = "No valid path available try again";
+          this.modalParagraph = "";
         }
+      }
+      else {
+        this.modalShow = true;
+        this.initalModal = false;
+        this.noAlgorithm = true;
+        this.modalHeader = "No selected algorithm";
+        this.modalParagraph = "Please select an algorithm to run the visualisation";
       }
    },
     visualiseAlgo(shortestPath, visitedNodes){
@@ -219,6 +236,7 @@ export default {
       }
     },
     resetGrid(){
+      this.modalShow = false;
       if(!this.runningVisualisation){
         this.range = 0;
         this.startNodeX = Math.floor((this.rows/2)-1);
@@ -238,18 +256,56 @@ export default {
       }
     },
     nextBtn() {
-      console.log('next')
+
+      if(this.modalCount == 0)
+      {
+        this.modalHeader = "How to use";
+        this.modalParagraph = "You can toggle walls by clicking individual nodes, using the slider in the menu increases the random walls generated. You can move the start and end nodes by clicking them and clicking the new spot you want them to be in. Select your visualisation and visualise, the program will find what it thinks is the most efficiant path.";
+      }
+
+      if(this.modalCount == 1)
+      {
+        this.modalHeader = "The Algorithms";
+        this.modalParagraph = "Dijkstra's Algorithm: the father of pathfinding algorithms; guarantees the shortest path. <br></br> A* Search (weighted): arguably the best pathfinding algorithm; uses heuristics to guarantee the shortest path much faster than Dijkstras Algorithm";
+      }
+
+
+      if(this.modalCount == 2)
+      {
+        this.modalHeader = "Enjoy";
+        this.modalParagraph = "Have fun with the visualisations, you can view the source code on my <a href=''>github</a>. <br/><br/> I'll be working on bugs and adding more features as i go.";
+      }
+
+      if(this.modalCount == 3)
+      {
+        this.modalShow = false;
+       
+      }
+
+
+
+      this.modalCount++;
+      
     },
     skipBtn() {
-      console.log('previous')
+      this.modalShow = false;
+    },
+    dismissModal(){
+      this.modalShow = false;
     }
+    
   
   },
   mounted: function() {
-    let windowHeight = window.innerHeight-93;
 
-    this.cols = Math.floor(this.$refs.algoGrid.clientWidth/25);
-    this.rows =  Math.floor(windowHeight/25);
+
+    if(window.innerWidth < 767 ) {
+      this.cols = 14;
+      this.rows = 14;
+    }
+
+    console.log(this.cols)
+    console.log(this.rows)
 
     this.startNodeX = Math.floor((this.rows/2)-1);
     this.startNodeY = Math.floor(this.cols/6);
@@ -406,7 +462,7 @@ margin-left: auto;
 
 
 .navbar__dropdown-menu {
-  display: relative;
+  display: relative; 
 }
 
 .navbar__dropdown-menu ul {
@@ -420,7 +476,7 @@ margin-left: auto;
   padding: 0;
   font-size: 14px;
   border-radius: 4px;
-  box-shadow: none;
+  box-shadow: 5px 5px 5px rgba(0, 0, 255, .2);;
 }
 
 .navbar__dropdown-menu ul.open {
@@ -437,19 +493,22 @@ margin-left: auto;
 }
 
 #nextBtn {
-  color: #ffffff;
-  background-color: #1abc9c;
   position: absolute;
   right: 2%;
   bottom: 4%;
 }
 
 #skipBtn {
-  color: #ffffff;
-  background-color: #1abc9c;
   position: absolute;
   left: 2%;
   bottom: 4%;
+}
+
+.btn--reset {
+  position: absolute;
+  bottom: 4%;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 /*-- --*/
@@ -467,7 +526,7 @@ background: rgba(0, 0, 0, 0.6);
   z-index: 3;
   background-color: rgba(255, 255, 255, 1);
   width: 50%;
-  height: 70%;
+  height: 50%;
   border: 2px solid #34495e;
   border-radius: 4px;
   text-align: center;
@@ -482,6 +541,13 @@ background: rgba(0, 0, 0, 0.6);
   right: 0;
 }
 
+.modal__body .modal__content {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  text-align: center; 
+  width:100%;
+}
 
 #walls {
   position: relative;
@@ -494,8 +560,8 @@ a {
 }
 
 #algo-grid {
-  padding:20px 5%;
-  width: 90%;
+  width: 625px;
+  margin: 20px auto;
 }
 
 #algo-grid td{
@@ -510,6 +576,11 @@ a {
 .btn--default {
   color: #ffffff;
   background-color: #bdc3c7;
+}
+
+.btn--dark {
+  color: #ffffff;
+  background-color: #05386B;
 }
 
 .btn {
@@ -533,5 +604,18 @@ a {
   .modal__body {
     width: 80%;
   }
+
+  #algo-grid {
+    width: 350px;
+  }
+
+  .navbar__brand {
+    float: none;
+  }
+
+  .navbar__nav li {
+    display: block;
+  }
+
 }
 </style>
