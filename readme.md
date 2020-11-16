@@ -19,5 +19,5 @@
 - [ ] allow user to see history of algorithm
 - [ ] maze algorithm
 - [ ] allow playback of historical algorithm
-- [ ] improve path not found, intermittent bug here when large amount of walls exist
-- [ ] improve rendering of grid, error seems to appear when over 800 nodes 
+- [ ] Bug Fix: improve path not found, intermittent bug here when large amount of walls exist
+- [ ] Bug Fix: improve rendering of grid, error seems to appear when over 800 nodes 
