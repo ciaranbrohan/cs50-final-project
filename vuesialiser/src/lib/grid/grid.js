@@ -1,9 +1,6 @@
 let grid = {
     init(rows, cols){ 
-    
 
-        console.log(rows)
-        console.log(cols)
         let grid = new Array(rows); //moved
     
         function Node (i,j){

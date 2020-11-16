@@ -81,7 +81,7 @@ export default {
       range:0,
       modalCount:0,
       dropDownActive:"",
-      modalHeader:"Welcome to Pathfinderr!",
+      modalHeader:"Welcome to Pathfinderr",
       modalParagraph: "This short tutorial will walk you through all of the features of this application.",
       modalShow: true,
       noValidPath: false,
@@ -104,24 +104,32 @@ export default {
         if(this.changingNode === "start"){
           this.startNodeX=parseInt(event.target.getAttribute("data-x"))
           this.startNodeY=parseInt(event.target.getAttribute("data-y"))
+          this.changingNode = ""
+          return;
         }
         if(this.changingNode === "end"){
           this.endNodeX=parseInt(event.target.getAttribute("data-x"))
           this.endNodeY=parseInt(event.target.getAttribute("data-y"))
+          this.changingNode = ""
+          return;
         }
         this.changingNode = ""
 
         if(event.target.classList.contains("start")){
           this.changingNode = "start"
+          return;
         }
         if(event.target.classList.contains("end")){
           this.changingNode = "end"
+          return;
         }
+
         if(!event.target.classList.contains("start") && !event.target.classList.contains("end")) {
           const x = event.target.getAttribute("data-x")
           const y = event.target.getAttribute("data-y")
           const newGrid = this.gridArray.slice();
           const node = newGrid[x][y];
+
 
           node.wall = !node.wall;
 
@@ -171,11 +179,7 @@ export default {
       if(this.selectedAlgo != "Pick Algorithm") {
         
         let algo = this.algo.calculate(this.gridArray, this.startNodeX, this.startNodeY, this.endNodeX, this.endNodeY);
-        console.log(this.gridArray)
-        console.log(algo.shortestPath )
-        console.log(algo.visitedSet)
         if(algo.shortestPath.length > 0 || algo.visitedSet.length  > 0) {
-          console.log('called')
           this.visualiseAlgo(algo.shortestPath, algo.visitedSet);
           this.hasVisualisation = true;
         }
@@ -304,8 +308,6 @@ export default {
       this.rows = 14;
     }
 
-    console.log(this.cols)
-    console.log(this.rows)
 
     this.startNodeX = Math.floor((this.rows/2)-1);
     this.startNodeY = Math.floor(this.cols/6);
