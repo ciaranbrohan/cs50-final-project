@@ -81,7 +81,7 @@ export default {
       range:0,
       modalCount:0,
       dropDownActive:"",
-      modalHeader:"Welcome to Pathfinding Visualizer!",
+      modalHeader:"Welcome to Pathfinderr!",
       modalParagraph: "This short tutorial will walk you through all of the features of this application.",
       modalShow: true,
       noValidPath: false,
