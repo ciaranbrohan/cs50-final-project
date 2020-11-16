@@ -273,7 +273,7 @@ export default {
       if(this.modalCount == 2)
       {
         this.modalHeader = "Enjoy";
-        this.modalParagraph = "Have fun with the visualisations, you can view the source code on my <a href=''>github</a>. <br/><br/> I'll be working on bugs and adding more features as i go.";
+        this.modalParagraph = "Have fun with the visualisations, you can view the source code on my <a href='https://github.com/ciaranbrohan'>github</a>. <br/><br/> I'll be working on bugs and adding more features as i go.";
       }
 
       if(this.modalCount == 3)
