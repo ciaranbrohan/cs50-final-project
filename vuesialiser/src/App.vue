@@ -176,20 +176,22 @@ export default {
       }
     },
     runAlgo(){
+
       if(this.selectedAlgo != "Pick Algorithm") {
-        
-        let algo = this.algo.calculate(this.gridArray, this.startNodeX, this.startNodeY, this.endNodeX, this.endNodeY);
-        if(algo.shortestPath.length > 0 || algo.visitedSet.length  > 0) {
-          this.visualiseAlgo(algo.shortestPath, algo.visitedSet);
-          this.hasVisualisation = true;
-        }
-        else {
-          this.modalShow = true
-          this.noValidPath = true;
-          this.noAlgorithm = false;
-          this.initalModal = false;
-          this.modalHeader = "No valid path available try again";
-          this.modalParagraph = "";
+        if(!this.runningVisualisation){
+          let algo = this.algo.calculate(this.gridArray, this.startNodeX, this.startNodeY, this.endNodeX, this.endNodeY);
+          if(algo.shortestPath.length > 0 || algo.visitedSet.length  > 0) {
+            this.visualiseAlgo(algo.shortestPath, algo.visitedSet);
+            this.hasVisualisation = true;
+          }
+          else {
+            this.modalShow = true
+            this.noValidPath = true;
+            this.noAlgorithm = false;
+            this.initalModal = false;
+            this.modalHeader = "No valid path available try again";
+            this.modalParagraph = "";
+          }
         }
       }
       else {
