@@ -12,6 +12,8 @@ This project was inspired by <a href="https://github.com/clementmihailescu">Clé
 My main reason for building this was inspired by the sorting algorithm visualistions in week 3 of the CS50x course, and wanting to gain a better understanding of how pathfinding works.
 
 
+
+
 ### Built With
 
 * [vuejs](vuejs)
